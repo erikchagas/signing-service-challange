@@ -41,7 +41,9 @@ transactionRoutes.post("/transaction/:deviceUuid", async (req, res) => {
   device.signatureCounter += 1;
   device.lastSignature = signature;
 
-  database.update("device", deviceUuid, device);
+  //database.update("device", deviceUuid, device);
+  database.delete("device", deviceUuid);
+  database.insert("device", device);
 
   const transaction: ITransaction = {
     uuid,
