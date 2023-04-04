@@ -8,6 +8,5 @@ export interface IDevice {
   privateKey?: string;
   publicKey: string;
   signatureCounter: number;
+  lastSignature?: string | null;
 }
-
-export interface ITransaction {}
