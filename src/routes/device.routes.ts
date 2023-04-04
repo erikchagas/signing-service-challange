@@ -11,8 +11,6 @@ deviceRoutes.post("/device", async (req, res) => {
   const { algorithm, label } = req.body;
   const uuid = crypto.randomUUID();
 
-  console.log("algorithm ", algorithm);
-
   if (!algorithm) return res.status(404).json({ error: "No algorithm found" });
 
   if (algorithm !== "ECC" && algorithm !== "RSA")

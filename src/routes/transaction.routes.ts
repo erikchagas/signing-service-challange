@@ -17,11 +17,7 @@ transactionRoutes.post("/transaction/:deviceUuid", async (req, res) => {
   const uuid = crypto.randomUUID();
 
   const device = database.select("device", deviceUuid);
-
-  console.log("device = ", device);
-
   if (!device) return res.status(404).json({ error: "No device found" });
-
   if (!dataToBeSigned)
     return res.status(404).json({ error: "No data to be signed found" });
 
@@ -44,8 +40,7 @@ transactionRoutes.post("/transaction/:deviceUuid", async (req, res) => {
 
   device.signatureCounter += 1;
   device.lastSignature = signature;
-  //
-  console.log("device = ", device);
+
   database.update("device", deviceUuid, device);
 
   const transaction: ITransaction = {
