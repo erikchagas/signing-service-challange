@@ -1,24 +1,15 @@
 // TODO: in-memory persistence ...
 import fs from "node:fs/promises";
-import { IDevice } from "../domain/device";
 import path from "node:path";
-
-type IEntity = "device";
-interface IDatabase {
-  device?: [IDevice?];
-}
 
 const databasePath = path.join(__dirname, "db.json");
 
 export default class Database {
-  database: IDatabase = {};
+  database: any = {};
 
   constructor() {
-    console.log("databasePath", databasePath);
     fs.readFile(databasePath, "utf8")
       .then((data) => {
-        console.log("readFile", data);
-
         this.database = JSON.parse(data);
       })
       .catch(() => {
@@ -30,15 +21,19 @@ export default class Database {
     fs.writeFile(databasePath, JSON.stringify(this.database));
   }
 
-  select(table: IEntity) {
-    const data = this.database[table] ?? [];
+  select(table: string, uuid?: string) {
+    let data = this.database[table] ?? [];
+
+    if (uuid) {
+      data = data.filter((row: any) => row.uuid === uuid)[0];
+    }
 
     return data;
   }
 
-  insert(table: IEntity, data: IDevice) {
+  insert(table: string, data: any) {
     if (Array.isArray(this.database[table])) {
-      this.database[table]?.push(data);
+      this.database[table].push(data);
     } else {
       this.database[table] = [data];
     }
@@ -46,5 +41,27 @@ export default class Database {
     this.persist();
 
     return data;
+  }
+
+  update(table: string, uuid: string, data: any) {
+    const rowIndex = this.database[table].findIndex(
+      (row: any) => row.uuid === uuid
+    );
+
+    if (rowIndex > -1) {
+      this.database[table][rowIndex] = { uuid, ...data };
+      this.persist();
+    }
+  }
+
+  delete(table: string, uuid: string) {
+    const rowIndex = this.database[table].findIndex(
+      (row: any) => row.uuid === uuid
+    );
+
+    if (rowIndex > -1) {
+      this.database[table].splice(rowIndex, 1);
+      this.persist();
+    }
   }
 }
