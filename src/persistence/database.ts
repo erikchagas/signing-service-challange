@@ -25,7 +25,7 @@ export default class Database {
     let data = this.database[table] ?? [];
 
     if (uuid) {
-      data = data.filter((row: any) => row.uuid === uuid)[0];
+      data = data.find((row: any) => row.uuid === uuid);
     }
 
     return data;
